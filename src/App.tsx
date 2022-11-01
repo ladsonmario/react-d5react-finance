@@ -1,25 +1,84 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react';
+import * as C from './App.styled';
+import { Items } from './data/items';
+import { Categories } from './data/categories';
+import { ItemsType, UserType, UserLoginType } from './types/types';
+import { getCurrentMonth, filterListByMonth } from './helpers/dateFilter';
+import { TableArea } from './components/TableArea';
+import { InfoArea } from './components/InfoArea';
+import { InputArea } from './components/InputArea';
+import { Login } from './components/Login';
+import { useAPI } from './firebase/api';
 
-function App() {
+const App = () => {
+  const [user, setUser] = useState<UserType>();
+  const [list, setList] = useState<ItemsType[]>(Items);  
+  const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
+  const [filteredList, setFilteredList] = useState<ItemsType[] | undefined>();
+  const [income, setIncome] = useState<number>(0);
+  const [expense, setExpense] = useState<number>(0);
+
+  useEffect(() => {
+    setFilteredList( filterListByMonth(list, currentMonth) );    
+  }, [list, currentMonth]);
+
+  useEffect(() => {
+    let incomeCount: number = 0;
+    let expenseCount: number = 0;
+
+    for(let i in filteredList) {
+      if(Categories[filteredList[parseInt(i)].category].expense) {
+        expenseCount += filteredList[parseInt(i)].value;
+      } else {
+        incomeCount += filteredList[parseInt(i)].value;
+      }
+    }
+
+    setIncome(incomeCount);
+    setExpense(expenseCount);
+
+  }, [filteredList]);
+
+  const handleMonthChange = (newMonth: string) => {
+    setCurrentMonth(newMonth);
+  }
+
+  const handleAddItem = (item: ItemsType) => {
+    let newList: ItemsType[] = [...list];
+    newList.push(item);
+    setList(newList);
+  }
+
+  const handleLoginData = async (user: UserLoginType) => {
+    const newUser: UserType = {
+      id: user.uid,
+      name: user.displayName,
+      image: user.photoURL
+    }
+
+    await useAPI.addUser(newUser);
+    setUser(newUser);
+  }
+
+  if(!user) {
+    return <Login onLoginFacebookData={handleLoginData} />
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <C.Container>
+      <header>
+        <h1>Sistema Financeiro</h1>
       </header>
-    </div>
+      <section>
+
+        <InfoArea currentMonth={currentMonth} onMonthChange={handleMonthChange} income={income} expense={expense} userInfo={user} />
+
+        <InputArea onAddItem={handleAddItem} />
+
+        <TableArea list={filteredList} />
+        
+      </section>
+    </C.Container>
   );
 }
 
