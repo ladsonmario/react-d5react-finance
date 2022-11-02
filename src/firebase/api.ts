@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore, addDoc, collection, doc, setDoc } from "firebase/firestore";
-import { UserType } from "../types/types";
+import { getFirestore, addDoc, collection, doc, setDoc, getDocs } from "firebase/firestore";
+import { CategoryType, UserType } from "../types/types";
 import firebaseConfig from "./firebaseConfig";
 
 const app = initializeApp(firebaseConfig);
@@ -17,7 +17,16 @@ export const useAPI = {
         await setDoc(doc(db, 'users', user.id), {
             id: user.id,
             name: user.name,
-            image: user.image
+            image: user.image,
+            finance: user.finance
+        });                
+    },
+    getCategories: async () => {
+        let cats: CategoryType[] = [];
+        const getCategories = await getDocs(collection(db, 'categories'));
+        getCategories.forEach(doc => {
+            cats.push(doc.data());
         });
+        return cats;
     }
 }

@@ -10,6 +10,7 @@ export type CategoryType = {
         title: string;
         color: string;
         expense: boolean;
+        slug: string;
     }
 }
 
@@ -17,6 +18,7 @@ export type UserType = {
     id: string;
     name: string;
     image: string;
+    finance: string;
 }
 
 export type UserLoginType = {

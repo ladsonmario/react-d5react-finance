@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as C from './App.styled';
 import { Items } from './data/items';
 import { Categories } from './data/categories';
-import { ItemsType, UserType, UserLoginType } from './types/types';
+import { ItemsType, UserType, UserLoginType, CategoryType } from './types/types';
 import { getCurrentMonth, filterListByMonth } from './helpers/dateFilter';
 import { TableArea } from './components/TableArea';
 import { InfoArea } from './components/InfoArea';
@@ -13,6 +13,7 @@ import { useAPI } from './firebase/api';
 const App = () => {
   const [user, setUser] = useState<UserType>();
   const [list, setList] = useState<ItemsType[]>(Items);  
+  const [categories, setCategories] = useState<CategoryType[] | undefined>();
   const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
   const [filteredList, setFilteredList] = useState<ItemsType[] | undefined>();
   const [income, setIncome] = useState<number>(0);
@@ -39,6 +40,15 @@ const App = () => {
 
   }, [filteredList]);
 
+  useEffect(() => {
+    if(user) {
+      ( async () => {
+        const cat: CategoryType[] = await useAPI.getCategories();
+        setCategories(cat);
+      })();
+    }
+  }, [user]);
+
   const handleMonthChange = (newMonth: string) => {
     setCurrentMonth(newMonth);
   }
@@ -53,7 +63,8 @@ const App = () => {
     const newUser: UserType = {
       id: user.uid,
       name: user.displayName,
-      image: user.photoURL
+      image: user.photoURL,
+      finance: `f_${user.uid}`
     }
 
     await useAPI.addUser(newUser);
@@ -73,7 +84,7 @@ const App = () => {
 
         <InfoArea currentMonth={currentMonth} onMonthChange={handleMonthChange} income={income} expense={expense} userInfo={user} />
 
-        <InputArea onAddItem={handleAddItem} />
+        <InputArea onAddItem={handleAddItem} categories={categories} />
 
         <TableArea list={filteredList} />
         
