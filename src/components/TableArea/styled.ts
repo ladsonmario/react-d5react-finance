@@ -9,12 +9,16 @@ export const Table = styled.table`
     margin-top: 20px;
 
     td {
-        padding: 10px 0;
+        padding: 10px 0;    
+    }
+
+    tr {        
+        gap: 10px;
     }
 `;
 
 export const TableHeadColumn = styled.th<{ width?: number; }>`
-    width: ${p => p.width ? `${p.width}px` : 'auto'};
+    width: ${p => p.width ? `${p.width}px` : '50%'};
     padding: 10px 0;
-    text-align: left;    
+    text-align: left;            
 `;

@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import * as C from './App.styled';
-import { Items } from './data/items';
-import { Categories } from './data/categories';
 import { ItemsType, UserType, UserLoginType, CategoryType } from './types/types';
 import { getCurrentMonth, filterListByMonth } from './helpers/dateFilter';
 import { TableArea } from './components/TableArea';
@@ -12,26 +10,30 @@ import { useAPI } from './firebase/api';
 
 const App = () => {
   const [user, setUser] = useState<UserType>();
-  const [list, setList] = useState<ItemsType[]>(Items);  
-  const [categories, setCategories] = useState<CategoryType[] | undefined>();
+  const [list, setList] = useState<ItemsType[]>([]);  
+  const [categories, setCategories] = useState<CategoryType[]>();
   const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
   const [filteredList, setFilteredList] = useState<ItemsType[] | undefined>();
   const [income, setIncome] = useState<number>(0);
   const [expense, setExpense] = useState<number>(0);
 
   useEffect(() => {
-    setFilteredList( filterListByMonth(list, currentMonth) );    
+    if(list) {
+      setFilteredList( filterListByMonth(list, currentMonth) );
+    }    
   }, [list, currentMonth]);
 
   useEffect(() => {
     let incomeCount: number = 0;
     let expenseCount: number = 0;
 
-    for(let i in filteredList) {
-      if(Categories[filteredList[parseInt(i)].category].expense) {
-        expenseCount += filteredList[parseInt(i)].value;
-      } else {
-        incomeCount += filteredList[parseInt(i)].value;
+    if(filteredList) {
+      for(let i = 0; i < filteredList.length; i++) {
+          if(filteredList[i].expense) {
+            expenseCount += Number(filteredList[i].value);
+          } else {
+            incomeCount += Number(filteredList[i].value);
+          }        
       }
     }
 
@@ -43,20 +45,34 @@ const App = () => {
   useEffect(() => {
     if(user) {
       ( async () => {
-        const cat: CategoryType[] = await useAPI.getCategories();
-        setCategories(cat);
+        await getCategories();
+        await updateListItems();
       })();
     }
   }, [user]);
+
+  const updateListItems = async () => {
+    if(user) {
+      setList([]);
+      const list: ItemsType[] = await useAPI.getListItems(user.finance);
+      setList(list);
+    }
+  }
+
+  const getCategories = async () => {
+    const cat: CategoryType[] = await useAPI.getCategories();
+    setCategories(cat);
+  }
 
   const handleMonthChange = (newMonth: string) => {
     setCurrentMonth(newMonth);
   }
 
-  const handleAddItem = (item: ItemsType) => {
-    let newList: ItemsType[] = [...list];
-    newList.push(item);
-    setList(newList);
+  const handleAddItem = async (item: ItemsType) => {
+    if(user) {
+      await useAPI.addItem(user, item);
+      await updateListItems();      
+    }    
   }
 
   const handleLoginData = async (user: UserLoginType) => {
@@ -82,11 +98,11 @@ const App = () => {
       </header>
       <section>
 
-        <InfoArea currentMonth={currentMonth} onMonthChange={handleMonthChange} income={income} expense={expense} userInfo={user} />
+        <InfoArea currentMonth={currentMonth} onMonthChange={handleMonthChange} income={income} expense={expense} userInfo={user} setUser={setUser} setList={setList} />
 
         <InputArea onAddItem={handleAddItem} categories={categories} />
 
-        <TableArea list={filteredList} />
+        <TableArea list={filteredList} categories={categories as CategoryType[]} />
         
       </section>
     </C.Container>

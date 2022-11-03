@@ -43,7 +43,13 @@ export const Container = styled.div`
             border: 0;
             outline: 0;
             cursor: pointer;
-            font-size: 16px;            
+            font-size: 17px; 
+            color: #1FAB89;          
+            font-weight: 700;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 
@@ -72,6 +78,25 @@ export const Container = styled.div`
         .resume--area {
             flex: 2;
             display: flex;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .info--area {
+
+            &:nth-child(2) {
+                flex-direction: column;
+                
+                .month--area {
+                    margin-bottom: 20px;
+                    padding-bottom: 20px;
+                    width: 100%;                    
+                }
+
+                .resume--area {
+                    width: 100%;
+                }
+            }
         }
     }
 `;

@@ -1,5 +1,5 @@
 import * as C from './styled';
-import { UserType } from '../../types/types';
+import { UserType, ItemsType } from '../../types/types';
 import { formatCurrentMonth } from '../../helpers/dateFilter';
 import { ResumeItem } from '../ResumeItem';
 
@@ -9,14 +9,25 @@ type Props = {
     income: number;
     expense: number;
     userInfo: UserType;
+    setUser: React.Dispatch<UserType>;
+    setList: React.Dispatch<ItemsType[]>
 }
-export const InfoArea = ({ currentMonth, onMonthChange, income, expense, userInfo }: Props) => {
+export const InfoArea = ({ setUser, setList, currentMonth, onMonthChange, income, expense, userInfo }: Props) => {
     const handleMonth = (action: string) => {
         let [year, month]: string[] = currentMonth.split('-');
         let currentDate: Date = new Date(parseInt(year), parseInt(month) - 1, 1);
         let monthManipulated = action === '-' ? +1 : -1;
         currentDate.setMonth( currentDate.getMonth() - monthManipulated );
         onMonthChange(`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`);
+    }
+
+    const handleExit = () => {
+        if(window.confirm('Deseja realmente sair?')) {
+            setList([]);
+            setUser(Object(null));
+
+            window.location.reload();
+        }
     }
 
     return (
@@ -26,7 +37,7 @@ export const InfoArea = ({ currentMonth, onMonthChange, income, expense, userInf
                     <img src={userInfo.image} alt="" />
                     <span>Olá, <span>{userInfo.name}</span></span>
                 </div> 
-                <button>Sair</button>               
+                <button onClick={handleExit}>Sair 🟢</button>               
             </div>
             <div className="info--area">
                 <div className="month--area">

@@ -18,10 +18,13 @@ export const Login = ({ onLoginFacebookData }: Props) => {
 
     return (
         <C.Container>
-            <div className="title">LadayWeb Financias</div>
+            <div className="title">
+                LadayWeb Financias
+                <img src="/service.gif" />
+            </div>
             <button onClick={handleLoginFacebook}>
                 Fazer login com Facebook
-                <img src="" />
+                <img src="/face.svg" />
             </button>
         </C.Container>
     );

@@ -16,6 +16,12 @@ export const Container = styled.div`
     section {
         max-width: 980px;
         margin: auto;
-        margin-bottom: 50px;
+        margin-bottom: 50px;        
+    }
+
+    @media (max-width: 600px) {
+        section {
+            padding: 10px;
+        }
     }
 `;

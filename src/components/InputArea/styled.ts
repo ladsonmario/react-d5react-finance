@@ -7,17 +7,27 @@ export const Container = styled.div`
     border-radius: 15px;
     margin-top: 20px;
 
-    form {
+    .add--item {
         width: 100%;
 
         .input--area {
-            display: flex;
-            gap: 10px;
+            display: flex;  
+            gap: 10px;          
+
+            .input--group {
+                width: 100%;
+                display: flex; 
+                justify-content: center;
+                gap: 10px;               
+            }
 
             .input--container {
                 display: flex;
                 flex-direction: column;
-                width: 25%; 
+                
+                .input--group {
+                    display: flex;
+                }
                 
                 label {
                     font-weight: 700;
@@ -34,7 +44,7 @@ export const Container = styled.div`
                     border-radius: 5px;
                     border: 1px solid #ddd;
 
-                    &[type="submit"] {
+                    &[type="button"] {
                         background-color: #1FAB89;
                         color: #D7FBE8;
                         text-transform: uppercase;
@@ -46,6 +56,26 @@ export const Container = styled.div`
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @media(max-width: 600px) {
+        .input--area {
+            flex-direction: column;
+
+            .input--group {                
+                .input--container {
+                    width: 100%;
+                }
+
+                .input--container input, select { 
+                    height: 40px !important;
+                }
+            }
+
+            .input--button input[type="button"] {
+                height: 50px;
             }
         }
     }
