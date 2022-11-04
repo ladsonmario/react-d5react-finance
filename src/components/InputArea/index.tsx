@@ -36,8 +36,7 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
             onAddItem(newItem); 
             setTitle('');
             setValue({ formattedValue: `R$ `, value: `${null}`, floatValue: null });
-            setCategory(''); 
-            setDate(undefined);
+            setCategory('');             
             alert(`Item ${title} adicionado com sucesso!`);            
         } else {
             alert('Preencha todos os campos!');
