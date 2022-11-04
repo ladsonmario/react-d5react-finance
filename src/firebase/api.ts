@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { initializeApp } from "firebase/app";
 import { getAuth, FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { DocumentData, getFirestore, updateDoc, addDoc, getDoc, collection, doc, setDoc, getDocs, arrayUnion } from "firebase/firestore";
+import { DocumentData, getFirestore, updateDoc, getDoc, collection, doc, setDoc, getDocs, arrayUnion } from "firebase/firestore";
 import { CategoryType, ItemsType, UserType } from "../types/types";
 import firebaseConfig from "./firebaseConfig";
 
@@ -82,5 +82,16 @@ export const useAPI = {
         }
 
         return newList;
+    },
+    delItem: async (finance: string, idItem: string) => {
+        const docItem = await getDoc(doc(db, 'finances', finance));        
+        let newList: ItemsType[] = [];
+        
+        if(docItem) {
+            const list = docItem.data() as DocumentData;            
+            newList = list.items.filter((i: ItemsType) => i.id !== idItem);               
+        }
+
+        await updateDoc(doc(db, 'finances', finance), { items: newList });
     }
 }

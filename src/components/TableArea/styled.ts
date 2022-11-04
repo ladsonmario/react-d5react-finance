@@ -12,9 +12,7 @@ export const Table = styled.table`
         padding: 10px 0;    
     }
 
-    tr {        
-        gap: 10px;
-    }
+    
 `;
 
 export const TableHeadColumn = styled.th<{ width?: number; }>`

@@ -8,13 +8,13 @@ type Props = {
     categories: CategoryType[] | undefined;
 }
 export const InputArea = ({ onAddItem, categories }: Props) => {  
-    const [date, setDate] = useState<Date>();
+    const [date, setDate] = useState<string>('');
     const [category, setCategory] = useState<string>('');
     const [title, setTitle] = useState<string>('');
     const [value, setValue] = useState<any>('');    
 
-    const handleDate = (e: ChangeEvent<HTMLInputElement>) => {                
-        setDate(new Date(`${e.target.value}T12:00:00`));        
+    const handleDate = (e: React.ChangeEvent<HTMLInputElement>) => {         
+        setDate(e.target.value);        
     }
     const handleCategory = (e: ChangeEvent<HTMLSelectElement>) => {
         setCategory(e.target.value);
@@ -28,15 +28,15 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
     }
     
     const handleSubmit = async () => {        
-        if(title && date && category && value) {
-            
+        if(title && date && category && value) {            
             const newItem: ItemsType = {
-                title, category, value, date
+                title, category, value, date: new Date(`${date}T20:00:00`)
             }
             onAddItem(newItem); 
             setTitle('');
             setValue({ formattedValue: `R$ `, value: `${null}`, floatValue: null });
-            setCategory('');             
+            setCategory('');        
+            setDate('');
             alert(`Item ${title} adicionado com sucesso!`);            
         } else {
             alert('Preencha todos os campos!');
@@ -50,7 +50,7 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
                     <div className="input--group">
                         <div className="input--container">
                             <label htmlFor="date--input">Data</label>
-                            <input type="date" id="date--input" onChange={handleDate} />
+                            <input type="date" id="date--input" value={date} onChange={handleDate} />
                         </div>
                         <div className="input--container">
                             <label htmlFor="cat--input">Categoria</label>

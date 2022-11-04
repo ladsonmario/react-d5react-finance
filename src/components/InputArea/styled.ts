@@ -24,6 +24,7 @@ export const Container = styled.div`
             .input--container {
                 display: flex;
                 flex-direction: column;
+                width: 100%;
                 
                 .input--group {
                     display: flex;
