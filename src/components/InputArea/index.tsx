@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent, Dispatch } from 'react';
 import { CategoryType, ItemsType, PriceValuesType } from '../../types/types';
 import { NumericFormat, OnValueChange } from 'react-number-format';
 import * as C from './styled';
@@ -6,15 +6,21 @@ import * as C from './styled';
 type Props = {
     onAddItem: (item: ItemsType) => void;
     categories: CategoryType[] | undefined;
+    date: string;
+    setDate: Dispatch<string>;
+    category: string;
+    setCategory: Dispatch<string>;
+    title: string;
+    setTitle: Dispatch<string>;
+    value: any;
+    setValue: Dispatch<any>;
+    editItem: (idItem: string, title: string, value: any, category: string ) => void;
+    itemSelected: ItemsType | null;
+    setItemSelected: Dispatch<ItemsType | null>;
 }
-export const InputArea = ({ onAddItem, categories }: Props) => {  
-    const [date, setDate] = useState<string>('');
-    const [category, setCategory] = useState<string>('');
-    const [title, setTitle] = useState<string>('');
-    const [value, setValue] = useState<any>('');    
-
+export const InputArea = ({ onAddItem, categories, date, setDate, category, setCategory, title, setTitle, value, setValue, editItem, itemSelected, setItemSelected }: Props) => { 
     const handleDate = (e: React.ChangeEvent<HTMLInputElement>) => {         
-        setDate(e.target.value);        
+        setDate(e.target.value);                
     }
     const handleCategory = (e: ChangeEvent<HTMLSelectElement>) => {
         setCategory(e.target.value);
@@ -43,6 +49,19 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
         }
     }    
 
+    const handleEditItem = () => {
+        if(itemSelected) {            
+            document.querySelector('body')?.scrollTo({ top: 0 });
+            setTitle('');
+            setValue({ formattedValue: `R$ `, value: '', floatValue: null });
+            setCategory('');        
+            setDate('');
+            alert(`Item ${title} atualizado com sucesso!`);
+            editItem(itemSelected.id as string, title, value, category);
+            setItemSelected(null);
+        }
+    }
+
     return (
         <C.Container>                        
             <div className="add--item">
@@ -50,7 +69,7 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
                     <div className="input--group">
                         <div className="input--container">
                             <label htmlFor="date--input">Data</label>
-                            <input type="date" id="date--input" value={date} onChange={handleDate} />
+                            <input type="date" id="date--input" value={date} onChange={handleDate} disabled={itemSelected?.id ? true : false} />
                         </div>
                         <div className="input--container">
                             <label htmlFor="cat--input">Categoria</label>
@@ -83,7 +102,7 @@ export const InputArea = ({ onAddItem, categories }: Props) => {
                     <div className="input--button">
                         <div className="input--container">
                             <label>⠀⠀⠀</label>
-                            <input type="button" value="Adicionar" onClick={handleSubmit} />
+                            <input type="button" value={itemSelected?.id ? 'Salvar' : 'Adicionar'} onClick={itemSelected?.id ? handleEditItem : handleSubmit} />
                         </div>
                     </div>                    
                 </div>

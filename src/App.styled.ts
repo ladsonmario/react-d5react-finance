@@ -25,3 +25,25 @@ export const Container = styled.div`
         }
     }
 `;
+export const ContainerButtonCancel = styled.div`
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
+    button {
+        outline: 0;
+        border: 0;
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #fff;
+        background-color: #d91f16;
+        cursor: pointer;    
+
+        &:hover {
+            opacity: .9;
+        }
+    }
+`;

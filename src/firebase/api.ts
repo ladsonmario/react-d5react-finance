@@ -93,5 +93,22 @@ export const useAPI = {
         }
 
         await updateDoc(doc(db, 'finances', finance), { items: newList });
+    },
+    updateItem: async (finance: string, idItem: string, title: string, value: any, category: string) => {
+        const docItem = await getDoc(doc(db, 'finances', finance));        
+
+        if(docItem) {
+            const list = docItem.data() as DocumentData;
+            const indexItem = list.items.findIndex((i: ItemsType) => i.id === idItem);
+
+            if(indexItem !== -1) {
+                list.items[indexItem].title = title;
+                list.items[indexItem].value = value;
+                list.items[indexItem].category = category;
+            }            
+
+            await updateDoc(doc(db, 'finances', finance), { items: list.items });
+        }
+
     }
 }

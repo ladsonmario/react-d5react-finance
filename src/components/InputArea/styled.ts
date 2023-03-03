@@ -51,6 +51,7 @@ export const Container = styled.div`
                         text-transform: uppercase;
                         font-weight: 700;
                         border: 0;
+                        cursor:pointer;
 
                         &:hover {
                             background-color: #62D2A2;

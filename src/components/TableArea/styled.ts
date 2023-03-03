@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-export const Table = styled.table`
+export const Table = styled.table<{ itemEdit: boolean }>`
     width: 100%;
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 5px #ccc;
     border-radius: 15px;
-    margin-top: 20px;
+    margin-top: 20px;        
 
     td {
         padding: 10px 0;    

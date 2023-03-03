@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as C from './App.styled';
 import { ItemsType, UserType, UserLoginType, CategoryType } from './types/types';
 import { getCurrentMonth, filterListByMonth, formatCurrentMonth } from './helpers/dateFilter';
@@ -16,8 +16,13 @@ const App = () => {
   const [currentMonth, setCurrentMonth] = useState<string>(getCurrentMonth());
   const [filteredList, setFilteredList] = useState<ItemsType[] | undefined>();
   const [income, setIncome] = useState<number>(0);
-  const [expense, setExpense] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [expense, setExpense] = useState<number>(0);  
+
+  const [itemSelected, setItemSelected] = useState<ItemsType | null>();
+  const [date, setDate] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [title, setTitle] = useState<string>('');
+  const [value, setValue] = useState<any>('');
 
   useEffect(() => {
     if(list) {      
@@ -96,6 +101,23 @@ const App = () => {
     }
   }
 
+  const editItem = async (idItem: string, title: string, value: any, category: string) => {
+    if(user) {
+      await useAPI.updateItem(user.finance, idItem, title, value, category);
+      await updateListItems();
+    }
+  }
+
+  const cancelEditing = () => {
+    if(itemSelected) {
+      setItemSelected(null);
+      setTitle('');
+      setValue({ formattedValue: `R$ `, value: `${null}`, floatValue: null });
+      setCategory('');        
+      setDate('');
+    }
+  }
+
   if(!user) {
     return <Login onLoginFacebookData={handleLoginData} />
   }
@@ -107,17 +129,52 @@ const App = () => {
       </header>
       <section>
 
-        <InfoArea currentMonth={currentMonth} onMonthChange={handleMonthChange} income={income} expense={expense} userInfo={user} />
+        <InfoArea 
+          currentMonth={currentMonth} 
+          onMonthChange={handleMonthChange} 
+          income={income} expense={expense} 
+          userInfo={user} 
+        />
 
-        <InputArea onAddItem={handleAddItem} categories={categories} />
+        <InputArea 
+          onAddItem={handleAddItem} 
+          categories={categories} 
+          date={date}
+          setDate={setDate}
+          category={category}
+          setCategory={setCategory}
+          title={title}
+          setTitle={setTitle}
+          value={value}
+          setValue={setValue}
+          editItem={editItem}
+          itemSelected={itemSelected as ItemsType | null}
+          setItemSelected={setItemSelected}
+        />
 
         {filteredList && filteredList.length > 0 &&
-          <>          
-            <Warning content="Para excluir um item da sua lista clique sobre ele e confirme!" />
-            <TableArea list={filteredList} categories={categories as CategoryType[]} loading={loading} delItem={handleDelItem} />
+          <>
+            {itemSelected?.id && 
+              <C.ContainerButtonCancel>
+                <button onClick={cancelEditing}>Cancelar Edição</button>
+              </C.ContainerButtonCancel>
+            }          
+            {!itemSelected?.id && <Warning content="Para Editar/Excluir um item da sua lista clique sobre ele e confirme!" />}
+            <TableArea 
+              list={filteredList} 
+              setList={setList}
+              categories={categories as CategoryType[]}              
+              delItem={handleDelItem}              
+              setDate={setDate}              
+              setCategory={setCategory}              
+              setTitle={setTitle}              
+              setValue={setValue}                      
+              itemSelected={itemSelected as ItemsType | null}
+              setItemSelected={setItemSelected}              
+            />
           </>
         }        
-        {!loading && filteredList?.length === 0 &&
+        {filteredList?.length === 0 &&
           <Warning content={`"Não há receitas e/ou despesas no mês de ${formatCurrentMonth(currentMonth)}..."`} />
         }
       </section>
